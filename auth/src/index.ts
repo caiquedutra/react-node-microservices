@@ -1,10 +1,12 @@
 import express from 'express';
-
 import { signUpRouter } from './routes/signup';
 import { signInRouter } from './routes/signin';
 import { signOutRouter } from './routes/signout';
 import { currentUserRouter } from './routes/current-user';
-import { errorHandler } from './middlewares/error-handle';
+import { errorHandler } from './errors/error-handle';
+import { NotFoundError } from './middlewares/not-found-error';
+require('express-async-errors');
+
 
 const app = express();
 
@@ -14,6 +16,11 @@ app.use(currentUserRouter);
 app.use(signUpRouter);
 app.use(signInRouter);
 app.use(signOutRouter);
+
+app.all('*', async() =>{
+     throw new NotFoundError();
+})
+
 app.use(errorHandler);
 
 

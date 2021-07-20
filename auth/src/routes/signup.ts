@@ -1,5 +1,9 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { DatabaseConnectionError } from '../middlewares/database-connection-error';
+import { RequestValidationError } from '../middlewares/request-validation-errors';
+require('express-async-errors');
+
 
 const router = express.Router();
 
@@ -11,15 +15,15 @@ router.post('/api/users/signup', [
         .trim()
         .isLength({ min: 4, max: 20 })
         .withMessage('Password must be between 4 and 20')
-], (req: Request, res: Response) => {
+], async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        throw new Error('Email and Password is wrong');
+        throw new RequestValidationError(errors.array());
     }
     console.log('Creating a user');
 
-    throw new Error('Error connecting to the database');
+    throw new DatabaseConnectionError;
 
     res.send({});
 })
