@@ -1,19 +1,19 @@
-import {scrypt, randomBytes} from 'crypto';
-import {promisify} from 'util'
+import { scrypt, randomBytes } from 'crypto';
+import { promisify } from 'util'
 
 const scrypted = promisify(scrypt)
 
 export class Password {
 
-    static async toHash(password: string){
+    static async toHash(password: string) {
         const salt = randomBytes(8).toString('hex');
-        const buf = (await scrypted(password, salt, 64)) as Buffer
+        const buf = (await scrypted(password, salt, 64)) as Buffer;
 
         return `${buf.toString('hex')}.${salt}`
     }
-    static async toCompare(storedPassword: string, suppliedPassword: string){
+    static async toCompare(storedPassword: string, suppliedPassword: string) {
         const [hashedPassword, salt] = storedPassword.split('.');
-        const buf = (await scrypted(storedPassword, salt, 64)) as Buffer
+        const buf = (await scrypted(suppliedPassword, salt, 64)) as Buffer
 
         return buf.toString('hex') === hashedPassword;
     }
